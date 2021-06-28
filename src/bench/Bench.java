@@ -3,54 +3,41 @@ package bench;
 import java.util.ArrayList;
 import java.util.Collection;
 
-class Multithreading extends Thread {
-
-    public void run() {
-        double var;
-        try {
-
-            var = Math.log10(37.71);
-            var = Math.sin(2.46);
-            var = Math.cos(0.27);
-            var = Math.sqrt(7.35);
-            var = 2.57 / 7.77;
-            var = Math.exp(3.95);
-            System.out.println(var);
-        } catch (Exception e) {
-            System.out.println("Exception is caught");
-        }
-
-    }
-}
-
 public class Bench {
 
     public static void main(String[] args) {
         final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
-        long tinicial = System.currentTimeMillis();
         int loops = 10;
         int score = 0;
+        long tinicial = System.currentTimeMillis();
 
-        Collection<Multithreading> threads = new ArrayList<>();
-
-        for (int i = 1; i <= NUM_THREADS; i++) {
-            Multithreading thread = new Multithreading();
-            thread.setName("Thread " + i);
-            threads.add(thread);
-        }
-
-        for (Multithreading mt : threads) {
-            mt.start();
-        }
-
-        for (Multithreading mt : threads) {
-            try {
-                mt.join();
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+        Collection<Thread> threads = new ArrayList<>();
+        for (int j = 0; j < 10000; j++) {
+            //Cria os Thread baseado nos núcleos do pc;
+            for (int i = 1; i <= NUM_THREADS; i++) {
+                Thread thread = new Thread(new Multithreading());
+                thread.setName("Thread " + i);
+                threads.add(thread);
             }
-        }
 
+            //Inicia os Thread;
+            for (Thread th : threads) {
+                th.start();
+
+            }
+
+            //Starta threads já criados;
+            for (Thread th : threads) {
+                try {
+                    th.join();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            threads.clear();
+        }
+        
         System.out.println("Tempo: " + (System.currentTimeMillis() - tinicial));
 
     }
